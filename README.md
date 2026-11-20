@@ -1,21 +1,25 @@
-# knowdrug 医生版
+# KnowDrug Doctor Edition (English)
 
-独立的移动端 HTML / CSS / JavaScript 项目，线上入口为 [医生版首页](https://lieberhuang.github.io/knowdrug-doctor/)。本地可运行 `python3 -m http.server 8080 --directory dist`。
+An English copy of the KnowDrug doctor app. The original Chinese project remains separate. This copy preserves the video files and video sources, patient insights, video browsing, and the Q&A workflow.
 
-## 页面与交互
+## Run locally
 
-- 顶部“最新资料”展示三段已提供的数字人视频。上下滑动切换，当前视频独占播放；支持暂停、静音、拖动进度和联系代表。视频顶部显示标题及当前序号，点击序号可在弹窗中搜索并直接切换视频。
-- 顶部“患者洞察”展示原有年龄、性别、所在地区和疾病进展图表。提问主题可筛选问题，点击问题可展开回答。
-- 右上角医生菜单仅保留“我的”。“我的”可查看本机问答记录及联系代表。
-- “问我更多”从底部打开问答弹窗，提供药品、保险两个专家模式；每个模式有不同的初始推荐问题。支持文字和浏览器中文语音识别。发送后流式显示 DeepSeek 回答，并给出三个与本次问题相关的追问。
+```bash
+python3 -m http.server 8080 --directory dist
+```
 
-## 接口与数据
+Open `http://127.0.0.1:8080/` on a computer or phone on the same network.
 
-- 问答由阿里云服务器上的 `/api/knowledge/stream` 提供。客户端不含 API Key；浏览器只发送当前问题、专家模式和近期问答上下文。药品专家仅回答日达仙相关问题。服务端负责上游认证、范围判断、流式转发和追问生成。
-- 患者洞察是本地合成展示数据，不会发送给问答服务。问答历史保存在当前浏览器的 `medlink-sessions` localStorage 中，没有跨设备同步。
-- 三段 MP4 和封面图位于 `dist/assets/feed-*.mp4` / `.jpg`，由页面直接加载。自动播放初始静音；如浏览器限制自动播放，可轻触视频手动播放。
-- 联系号码 `13800000000` 为演示号码，呼叫通过系统拨号界面发起。
+## Implementation
 
-## 检查
+- `dist/` is the deployable site. GitHub Pages serves this directory from the `gh-pages` branch.
+- `dist/i18n-en.js` translates interface text in place without changing the underlying interaction logic or video media.
+- The Q&A client requests English responses from the existing server using `locale: "en"`. The server keeps its default Chinese behavior for the original apps.
+- Browser storage uses the `medlink-en-` prefix, separate from the Chinese doctor app.
 
-`npm ci && npm test` 检查移动视口与弹窗兼容、顶部导航、患者图表、视频切换和控制、专家切换、语音输入、SSE 流式渲染、追问与问答历史。
+## Check
+
+```bash
+npm ci
+npm test
+```

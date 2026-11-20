@@ -3,7 +3,7 @@ const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
 const icon=name=>`<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const storage={get(key,fallback){try{return JSON.parse(localStorage.getItem('medlink-'+key))??fallback;}catch{return fallback;}},set(key,value){try{localStorage.setItem('medlink-'+key,JSON.stringify(value));return true;}catch{toast('历史记录未保存，请检查浏览器存储空间');return false;}}};
+const storage={get(key,fallback){try{return JSON.parse(localStorage.getItem('medlink-en-'+key))??fallback;}catch{return fallback;}},set(key,value){try{localStorage.setItem('medlink-en-'+key,JSON.stringify(value));return true;}catch{toast('历史记录未保存，请检查浏览器存储空间');return false;}}};
 let doctor=storage.get('doctor',{name:'张医生',department:'心血管内科',hospital:'上海市第一人民医院'});
 if(doctor.hospital==='医伴示范医院'||doctor.hospital==='医伴学术中心')doctor.hospital='上海市第一人民医院';
 let sessions=storage.get('sessions',[]),activeSession=null,currentPage='home',answering=false,requestSession=null,requestController=null,streamText='';
@@ -184,7 +184,7 @@ document.addEventListener('click',async event=>{
  if(target.dataset.answerAction){if(target.dataset.answerAction==='contact')openDialer();else showDrugInfo();return;}
  if(target.dataset.copy!==undefined){const answer=activeSession?.messages[Number(target.dataset.copy)]?.answer;if(answer){try{await navigator.clipboard.writeText(answer.title+'\n'+answer.body);toast('回答已复制');}catch{toast('请长按回答文字复制');}}}
 });
-$('#modal-content').addEventListener('input',event=>{if(event.target.id!=='video-search')return;const query=event.target.value.trim().toLocaleLowerCase('zh-CN');let matches=0;$$('[data-video-choice]',$('#modal-content')).forEach(row=>{row.hidden=!VIDEO_FEED[Number(row.dataset.videoChoice)].title.toLocaleLowerCase('zh-CN').includes(query);if(!row.hidden)matches++;});$('.video-list-empty',$('#modal-content')).hidden=matches>0;});
+$('#modal-content').addEventListener('input',event=>{if(event.target.id!=='video-search')return;const query=event.target.value.trim().toLocaleLowerCase('zh-CN');let matches=0;$$('[data-video-choice]',$('#modal-content')).forEach(row=>{row.hidden=!(VIDEO_FEED[Number(row.dataset.videoChoice)].title.toLocaleLowerCase('zh-CN').includes(query)||window.KnowDrugEnglish?.translate(VIDEO_FEED[Number(row.dataset.videoChoice)].title).toLowerCase().includes(query));if(!row.hidden)matches++;});$('.video-list-empty',$('#modal-content')).hidden=matches>0;});
 $('#video-feed').addEventListener('input',event=>{if(event.target.dataset.seek===undefined)return;const media=$$('.feed-media')[Number(event.target.dataset.seek)];if(Number.isFinite(media.duration))media.currentTime=Number(event.target.value)/100*media.duration;});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){pauseVideos();stopVoice();}else playActiveVideo();});
 window.addEventListener('pagehide',()=>{pauseVideos();stopVoice();});
